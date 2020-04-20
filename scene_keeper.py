@@ -1,12 +1,13 @@
 import bpy
 import os
 
-### variables
+### VARIABLES
 
 objects = bpy.context.scene.objects
 collection_names = ['_delete', 'geo', 'lgt', 'cam', 'ctrl', 'rig']
 types = []
 
+### CODE
 
 # go through all objects in this scene, check their type and store it in list "types"
 for object in objects:
@@ -61,6 +62,7 @@ for collection in bpy.data.collections:
             object.name = prefix + object.name
         
         
-### DEBUG   
+### DEBUG 
+  
 #os.system("cls")
 #bpy.app.debug_wm = True

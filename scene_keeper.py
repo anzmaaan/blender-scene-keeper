@@ -1,5 +1,4 @@
 import bpy
-import os
 
 
 ### VARIABLES
@@ -16,8 +15,6 @@ def collection_exists(c):
     for collection in bpy.data.collections:
         if collection.name == c:
             return True
-        else:
-            return False
         
         
 ### CODE
@@ -26,18 +23,15 @@ def collection_exists(c):
 for object in objects:
     types.append(object.type)
     types = list(dict.fromkeys(types)) # remove duplicates from types
-    
-print(types)
 
 # create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
 temp_collection = bpy.data.collections.new(collection_names[0])
 bpy.context.scene.collection.children.link(temp_collection)
 
 for type in types:
-    #if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'TEXT':
-    if type == 'MESH':
-        if collection_exists(collection_names[1]) == True:
-            print("Collection already exists.")
+    if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'TEXT':
+        if collection_exists(collection_names[1]):
+            continue
         else: 
             temp_collection = bpy.data.collections.new(collection_names[1])
             bpy.context.scene.collection.children.link(temp_collection) 
@@ -94,5 +88,4 @@ for object in objects:
         
         
 ### DEBUG   
-#os.system("cls")
 #bpy.app.debug_wm = True

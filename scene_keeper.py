@@ -4,8 +4,36 @@ import bpy
 ### VARIABLES
 
 objects = bpy.context.scene.objects
-collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx']
-prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_']
+collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx', 'RENAME']
+prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_', 'RENAME_']
+default_names = [
+    "Plane",
+    "Cube",
+    "Circle",
+    "Sphere",
+    "Icosphere",
+    "Cylinder",
+    "Cone",
+    "Torus",
+    "Grid",
+    "Suzanne",
+    "BezierCurve",
+    "BezierCircle",
+    "NurbsCurve",
+    "NurbsCircle",
+    "NurbsPath",
+    "Mball",
+    "Text",
+    "Armature",
+    "Lattice",
+    "Empty",
+    "Point",
+    "Sun",
+    "Spot",
+    "Area",
+    "Camera",
+    "Field",
+]
 types = []
 
 
@@ -24,7 +52,27 @@ for object in objects:
     types.append(object.type)
     types = list(dict.fromkeys(types)) # remove duplicates from types
 
-# create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
+# go through all objects and check if they have the default name
+for object in objects:
+    if object.name in default_names:
+        current_name = object.name
+        object.name = prefixes[8] + current_name
+        # if one has default name, create collection "_RENAME_" and move it to that collection
+        if collection_exists(collection_names[7]):
+            for collection in object.users_collection:
+                collection.objects.unlink(object)
+            bpy.data.collections[collection_names[7]].objects.link(object)
+        else:
+            temp_collection = bpy.data.collections.new(collection_names[7])
+            bpy.context.scene.collection.children.link(temp_collection)
+            for collection in object.users_collection:
+                collection.objects.unlink(object)
+            bpy.data.collections[collection_names[7]].objects.link(object)
+        
+
+        
+
+""" # create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
 temp_collection = bpy.data.collections.new(collection_names[0])
 bpy.context.scene.collection.children.link(temp_collection)
 
@@ -88,4 +136,4 @@ for object in objects:
         
         
 ### DEBUG   
-#bpy.app.debug_wm = True
+#bpy.app.debug_wm = True """

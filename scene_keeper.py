@@ -1,8 +1,8 @@
 import bpy
 
-
 ### VARIABLES
 
+types = []
 objects = bpy.context.scene.objects
 collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx', 'RENAME']
 prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_', 'RENAME_']
@@ -34,17 +34,20 @@ default_names = [
     "Camera",
     "Field",
 ]
-types = []
 
 
 ### FUNCTIONS
 
+# Check if a collection already exists in this scene
 def collection_exists(c):
     for collection in bpy.data.collections:
         if collection.name == c:
             return True
-        
-        
+
+def prefix_exists(p):
+    for object in objects:
+        print(object.name[0:3])
+   
 ### CODE
 
 # go through all objects in this scene, check their type and store it in list "types"
@@ -54,27 +57,17 @@ for object in objects:
 
 # go through all objects and check if they have the default name
 for object in objects:
+    # put prefix "rename_" if they use default name
     if object.name in default_names:
         current_name = object.name
         object.name = prefixes[8] + current_name
-        # if one has default name, create collection "_RENAME_" and move it to that collection
-        if collection_exists(collection_names[7]):
-            for collection in object.users_collection:
-                collection.objects.unlink(object)
-            bpy.data.collections[collection_names[7]].objects.link(object)
-        else:
-            temp_collection = bpy.data.collections.new(collection_names[7])
-            bpy.context.scene.collection.children.link(temp_collection)
-            for collection in object.users_collection:
-                collection.objects.unlink(object)
-            bpy.data.collections[collection_names[7]].objects.link(object)
         
-
-        
-
-""" # create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
-temp_collection = bpy.data.collections.new(collection_names[0])
-bpy.context.scene.collection.children.link(temp_collection)
+# create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
+if collection_exists(collection_names[0]):
+    pass
+else: 
+    temp_collection = bpy.data.collections.new(collection_names[0])
+    bpy.context.scene.collection.children.link(temp_collection) 
 
 for type in types:
     if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'TEXT':
@@ -84,17 +77,29 @@ for type in types:
             temp_collection = bpy.data.collections.new(collection_names[1])
             bpy.context.scene.collection.children.link(temp_collection) 
     elif type == 'LIGHT':
-        temp_collection = bpy.data.collections.new(collection_names[2])
-        bpy.context.scene.collection.children.link(temp_collection)
+        if collection_exists(collection_names[2]):
+            continue
+        else: 
+            temp_collection = bpy.data.collections.new(collection_names[2])
+            bpy.context.scene.collection.children.link(temp_collection) 
     elif type == 'CAMERA':
-        temp_collection = bpy.data.collections.new(collection_names[3])
-        bpy.context.scene.collection.children.link(temp_collection)
-    elif type == 'EMPTY':
-        temp_collection = bpy.data.collections.new(collection_names[4])
-        bpy.context.scene.collection.children.link(temp_collection)
+        if collection_exists(collection_names[3]):
+            continue
+        else: 
+            temp_collection = bpy.data.collections.new(collection_names[3])
+            bpy.context.scene.collection.children.link(temp_collection) 
+    elif type == 'EMPTY' or type == 'LATTICE':
+        if collection_exists(collection_names[4]):
+            continue
+        else: 
+            temp_collection = bpy.data.collections.new(collection_names[4])
+            bpy.context.scene.collection.children.link(temp_collection) 
     elif type == 'ARMATURE':
-        temp_collection = bpy.data.collections.new(collection_names[5])
-        bpy.context.scene.collection.children.link(temp_collection)
+        if collection_exists(collection_names[5]):
+            continue
+        else: 
+            temp_collection = bpy.data.collections.new(collection_names[5])
+            bpy.context.scene.collection.children.link(temp_collection) 
         
 # go through all objects in this scene, unlink them from current collection and move them to the appropriate collection or to "_delete"
 for object in objects:
@@ -136,4 +141,4 @@ for object in objects:
         
         
 ### DEBUG   
-#bpy.app.debug_wm = True """
+#bpy.app.debug_wm = True

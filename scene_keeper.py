@@ -47,6 +47,8 @@ def collection_exists(c):
 def prefix_exists(p):
     for object in objects:
         print(object.name[0:3])
+        current_name = object.name
+        print(current_name.find('_'))
    
 ### CODE
 

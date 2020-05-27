@@ -39,16 +39,19 @@ default_names = [
 ### FUNCTIONS
 
 # Check if a collection already exists in this scene
-def collection_exists(c):
+def collection_exists(collection_name):
     for collection in bpy.data.collections:
-        if collection.name == c:
+        if collection.name == collection_name:
             return True
 
-def prefix_exists(p):
-    for object in objects:
-        print(object.name[0:3])
+def prefix_exists(object):
         current_name = object.name
-        print(current_name.find('_'))
+        index = current_name.find('_')
+        prefix = object.name[0:index+1]
+        
+        if prefix in prefixes:
+            return True
+
    
 ### CODE
 
@@ -124,22 +127,25 @@ for object in objects:
             
 # go through all objects and add appropriate prefix to its name, determined by its type
 for object in objects:
-    if object.type == 'MESH':
-        object.name = prefixes[0] + object.name
-    elif object.type == 'CURVE':
-        object.name = prefixes[1] + object.name
-    elif object.type == 'META':
-        object.name = prefixes[2] + object.name
-    elif object.type == 'FONT':
-        object.name = prefixes[3] + object.name
-    elif object.type == 'LIGHT':
-        object.name = prefixes[4] + object.name
-    elif object.type == 'CAMERA':
-        object.name = prefixes[5] + object.name
-    elif object.type == 'EMPTY' or object.type == 'LATTICE':
-        object.name = prefixes[6] + object.name
-    elif object.type == 'ARMATURE':
-        object.name = prefixes[7] + object.name
+    if prefix_exists(object):
+        continue
+    else:
+        if object.type == 'MESH':
+            object.name = prefixes[0] + object.name
+        elif object.type == 'CURVE':
+            object.name = prefixes[1] + object.name
+        elif object.type == 'META':
+            object.name = prefixes[2] + object.name
+        elif object.type == 'FONT':
+            object.name = prefixes[3] + object.name
+        elif object.type == 'LIGHT':
+            object.name = prefixes[4] + object.name
+        elif object.type == 'CAMERA':
+            object.name = prefixes[5] + object.name
+        elif object.type == 'EMPTY' or object.type == 'LATTICE':
+            object.name = prefixes[6] + object.name
+        elif object.type == 'ARMATURE':
+            object.name = prefixes[7] + object.name
         
         
 ### DEBUG   

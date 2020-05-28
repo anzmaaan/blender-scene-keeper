@@ -2,10 +2,12 @@ import bpy
 
 ### VARIABLES
 
-types = []
 objects = bpy.context.scene.objects
-collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx', 'RENAME']
-prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_', 'RENAME_']
+
+types = []
+collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx']
+prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_', 'fx_', 'RENAME_']
+fx_modifier = ['CLOTH', 'COLLISION', 'PARTICLE_INSTANCE', 'PARTICLE_SYSTEM', 'FLUID']
 default_names = [
     "Plane",
     "Cube",
@@ -44,6 +46,7 @@ def collection_exists(collection_name):
         if collection.name == collection_name:
             return True
 
+# Check if prefix in objects name
 def prefix_exists(object):
         current_name = object.name
         index = current_name.find('_')
@@ -52,21 +55,47 @@ def prefix_exists(object):
         if prefix in prefixes:
             return True
 
+# Check if modifier exists on object
+def modifier_exists(modifier_type):
+    if object.modifiers:
+        for modifier in object.modifiers:
+            if modifier.type == modifier_type:
+                return True
    
 ### CODE
 
-# go through all objects in this scene, check their type and store it in list "types"
+# go through all objects in this scene 
 for object in objects:
+    # check objects type and store it in list "types"
     types.append(object.type)
     types = list(dict.fromkeys(types)) # remove duplicates from types
-
-# go through all objects and check if they have the default name
-for object in objects:
-    # put prefix "rename_" if they use default name
+    # check if object has default name
     if object.name in default_names:
+        # put "RENAME" into name if they use default name
         current_name = object.name
-        object.name = prefixes[8] + current_name
-        
+        object.name = prefixes[-1] + current_name + 
+        # add appropriate prefix to objects name, determined by its type
+    if prefix_exists(object):
+        continue
+    else:
+        if object.type == 'MESH':
+            object.name = prefixes[0] + object.name
+        elif object.type == 'CURVE':
+            object.name = prefixes[1] + object.name
+        elif object.type == 'META':
+            object.name = prefixes[2] + object.name
+        elif object.type == 'FONT':
+            object.name = prefixes[3] + object.name
+        elif object.type == 'LIGHT':
+            object.name = prefixes[4] + object.name
+        elif object.type == 'CAMERA':
+            object.name = prefixes[5] + object.name
+        elif object.type == 'EMPTY' or object.type == 'LATTICE':
+            object.name = prefixes[6] + object.name
+        elif object.type == 'ARMATURE':
+            object.name = prefixes[7] + object.name
+
+
 # create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
 if collection_exists(collection_names[0]):
     pass
@@ -75,10 +104,10 @@ else:
     bpy.context.scene.collection.children.link(temp_collection) 
 
 for type in types:
-    if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'TEXT':
+    if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'FONT':
         if collection_exists(collection_names[1]):
             continue
-        else: 
+        else:
             temp_collection = bpy.data.collections.new(collection_names[1])
             bpy.context.scene.collection.children.link(temp_collection) 
     elif type == 'LIGHT':
@@ -124,29 +153,7 @@ for object in objects:
         bpy.data.collections[collection_names[5]].objects.link(object)
     else:
         bpy.data.collections[collection_names[0]].objects.link(object)
-            
-# go through all objects and add appropriate prefix to its name, determined by its type
-for object in objects:
-    if prefix_exists(object):
-        continue
-    else:
-        if object.type == 'MESH':
-            object.name = prefixes[0] + object.name
-        elif object.type == 'CURVE':
-            object.name = prefixes[1] + object.name
-        elif object.type == 'META':
-            object.name = prefixes[2] + object.name
-        elif object.type == 'FONT':
-            object.name = prefixes[3] + object.name
-        elif object.type == 'LIGHT':
-            object.name = prefixes[4] + object.name
-        elif object.type == 'CAMERA':
-            object.name = prefixes[5] + object.name
-        elif object.type == 'EMPTY' or object.type == 'LATTICE':
-            object.name = prefixes[6] + object.name
-        elif object.type == 'ARMATURE':
-            object.name = prefixes[7] + object.name
-        
+ 
         
 ### DEBUG   
 #bpy.app.debug_wm = True

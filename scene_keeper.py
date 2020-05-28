@@ -63,7 +63,7 @@ def fx_modifier_applied(object):
                 if modifier.type == fx_modifier:
                     return True
 
-   
+
 ### CODE
 
 # go through all objects in this scene 
@@ -166,7 +166,3 @@ for object in objects:
         bpy.data.collections[collection_names[5]].objects.link(object)
     else:
         bpy.data.collections[collection_names[0]].objects.link(object)
- 
-        
-### DEBUG   
-#bpy.app.debug_wm = True

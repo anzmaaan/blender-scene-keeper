@@ -7,7 +7,7 @@ objects = bpy.context.scene.objects
 types = []
 collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx']
 prefixes = ['geo_', 'crv_', 'meta_', 'txt_', 'lgt_', 'cam_', 'ctrl_', 'rig_', 'fx_', 'RENAME_']
-fx_modifier = ['CLOTH', 'COLLISION', 'PARTICLE_INSTANCE', 'PARTICLE_SYSTEM', 'FLUID']
+fx_modifiers = ['CLOTH', 'COLLISION', 'PARTICLE_INSTANCE', 'PARTICLE_SYSTEM', 'FLUID']
 default_names = [
     "Plane",
     "Cube",
@@ -46,21 +46,23 @@ def collection_exists(collection_name):
         if collection.name == collection_name:
             return True
 
-# Check if prefix in objects name
-def prefix_exists(object):
+# Check if prefix in objects name (except "RENAME_")
+def prefix_applied(object):
         current_name = object.name
         index = current_name.find('_')
         prefix = object.name[0:index+1]
         
-        if prefix in prefixes:
+        if prefix in prefixes[0:-2]:
             return True
 
 # Check if modifier exists on object
-def modifier_exists(modifier_type):
+def fx_modifier_applied(object):
     if object.modifiers:
         for modifier in object.modifiers:
-            if modifier.type == modifier_type:
-                return True
+            for fx_modifier in fx_modifiers:
+                if modifier.type == fx_modifier:
+                    return True
+
    
 ### CODE
 
@@ -73,13 +75,16 @@ for object in objects:
     if object.name in default_names:
         # put "RENAME" into name if they use default name
         current_name = object.name
-        object.name = prefixes[-1] + current_name + 
-        # add appropriate prefix to objects name, determined by its type
-    if prefix_exists(object):
+        object.name = prefixes[-1] + current_name
+    # add appropriate prefix to objects name, determined by its type
+    if prefix_applied(object):
         continue
     else:
         if object.type == 'MESH':
-            object.name = prefixes[0] + object.name
+            if fx_modifier_applied(object):
+                object.name = prefixes[8] + object.name
+            else:
+                object.name = prefixes[0] + object.name
         elif object.type == 'CURVE':
             object.name = prefixes[1] + object.name
         elif object.type == 'META':
@@ -109,6 +114,11 @@ for type in types:
             continue
         else:
             temp_collection = bpy.data.collections.new(collection_names[1])
+            bpy.context.scene.collection.children.link(temp_collection) 
+        if collection_exists(collection_names[6]):
+            continue
+        else:
+            temp_collection = bpy.data.collections.new(collection_names[6])
             bpy.context.scene.collection.children.link(temp_collection) 
     elif type == 'LIGHT':
         if collection_exists(collection_names[2]):
@@ -142,7 +152,10 @@ for object in objects:
             collection.objects.unlink(object)
             
     if object.type == 'MESH' or object.type == 'CURVE' or object.type == 'META' or object.type == 'FONT':
-        bpy.data.collections[collection_names[1]].objects.link(object)
+        if fx_modifier_applied(object):
+            bpy.data.collections[collection_names[6]].objects.link(object)
+        else:
+            bpy.data.collections[collection_names[1]].objects.link(object)
     elif object.type == 'LIGHT':
         bpy.data.collections[collection_names[2]].objects.link(object)
     elif object.type == 'CAMERA':

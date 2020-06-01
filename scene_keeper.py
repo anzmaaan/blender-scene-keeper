@@ -1,8 +1,18 @@
+bl_info = {
+    "name": "Scene Keeper",
+    "description": "Keep your blender scene organized and tidy. Creates collections for every object type in your scene, moves them to the appropriate collection, assigns prefixes based on type and checks for unnamed/default named objects.",
+    "author": "Anselm <mail@anselmwagner.com>",
+    "version": (0, 1),
+    "location": "Spacebar Search > 'Scene Keeper'",
+    "blender": (2, 82, 0),
+    "category": "Anz",
+    "wiki_url": "code.anselmwagner.com",
+    }
+
 import bpy
 
 class ANZ_OT_scene_keeper(bpy.types.Operator):
-    """Keep your blender scene organized and tidy. Creates collections for every object type in your scene, moves them to the appropriate collection, assigns 
-prefixes based on type and checks for unnamed/default named objects."""
+    """Keep your blender scene organized and tidy. Creates collections for every object type in your scene, moves them to the appropriate collection, assigns prefixes based on type and checks for unnamed/default named objects."""
     bl_idname = "anz.scene_keeper"
     bl_label = "Scene Keeper"
     
@@ -188,6 +198,7 @@ def register():
     
 def unregister():
     bpy.utils.unregister_class(ANZ_OT_scene_keeper)
-    
-if __name__ == '__main__':
-    register()
+
+# Only needed if run from the scripting editor in Blender to register properly  
+# if __name__ == '__main__':
+#     register()

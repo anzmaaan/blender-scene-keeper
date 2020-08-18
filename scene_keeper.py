@@ -4,7 +4,7 @@ bl_info = {
     "author": "Anselm <mail@anselmwagner.com>",
     "version": (0, 1),
     "location": "Spacebar Search > 'Scene Keeper'",
-    "blender": (2, 82, 0),
+    "blender": (2, 83, 4),
     "category": "Anz",
     "wiki_url": "code.anselmwagner.com",
     }
@@ -26,7 +26,8 @@ class ANZ_OT_scene_keeper(bpy.types.Operator):
         
         ### VARIABLES
   
-        objects = bpy.context.scene.objects
+        #objects = bpy.context.scene.objects
+        objects = bpy.context.selected_objects
 
         types = []
         collection_names = ['_delete', 'mdl', 'lgt', 'cam', 'ctrl', 'rig', 'fx']
@@ -125,12 +126,13 @@ class ANZ_OT_scene_keeper(bpy.types.Operator):
                     object.name = prefixes[7] + object.name
 
 
-        # create collection "_delete" no matter what, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
-        if collection_exists(collection_names[0]):
-            pass
-        else: 
-            temp_collection = bpy.data.collections.new(collection_names[0])
-            bpy.context.scene.collection.children.link(temp_collection) 
+        # create collection "_delete" if objects are selected, create collections from list "types" using names defined in list "collection_names" and link them to the outliner
+        if not objects == []:
+            if collection_exists(collection_names[0]):
+                pass
+            else: 
+                temp_collection = bpy.data.collections.new(collection_names[0])
+                bpy.context.scene.collection.children.link(temp_collection) 
 
         for type in types:
             if type == 'MESH' or type == 'CURVE' or type == 'META' or type == 'FONT':
